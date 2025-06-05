@@ -1,81 +1,90 @@
--- =====================================
--- 🧩 Datos de inicio para tipo_estado
--- =====================================
-INSERT INTO tipo_estado (id, nombre, descripcion, codigo) VALUES
-  (1, 'General', 'Estados generales para uso común', 'GEN'),
-  (2, 'Usuario', 'Estados de los usuarios', 'USR'),
-  (3, 'Rol', 'Estados para roles', 'ROL'),
-  (4, 'Permiso', 'Estados para permisos', 'PER'),
-  (5, 'Menú', 'Estados para los menús', 'MEN'),
-  (6, 'Sucursal', 'Estados de las sucursales', 'SUC');
 
--- ===============================
--- 🧩 Datos de inicio para estados
--- ===============================
-INSERT INTO estados (tipo_estado_id, nombre, codigo, descripcion, orden) VALUES
-  (1, 'Activo', 'ACT', 'Elemento activo', 1),
-  (2, 'Inactivo', 'INA', 'Elemento inactivo', 2),
-  (3, 'Vigente', 'VIG', 'Usuario vigente', 1),
-  (4, 'Bloqueado', 'BLQ', 'Usuario bloqueado', 2),
-  (5, 'Bloqueado Aut.', 'BLQA', 'Usuario bloqueado de forma automática', 3);
+-- =======================
+-- Insertar datos en tipo_estado
+-- =======================
+INSERT INTO tipo_estado (id, nombre, descripcion, codigo, creado_por, creado_en)
+VALUES 
+  (1, 'General', 'Estados de uso general del sistema', 'GEN', 1, CURRENT_TIMESTAMP),
+  (2, 'Seguridad', 'Estados relacionados a usuarios, roles, etc.', 'SEG', 1, CURRENT_TIMESTAMP);
 
--- ================================
--- 🏢 Datos de inicio para sucursales
--- ================================
-INSERT INTO sucursales (nombre, codigo, descripcion, direccion, telefono, email, estado_id) VALUES
-  ('Sucursal Central', 'CENTRAL', 'Sede principal del centro educativo', 'Av. Principal 123', '12345678', 'central@sistema.edu', 1),
-  ('Sucursal Norte', 'NORTE', 'Ubicada en la zona norte', 'Calle 10 y Av. Norte', '87654321', 'norte@sistema.edu', 1);
+-- =======================
+-- Insertar datos en estados
+-- =======================
+INSERT INTO estados (id, tipo_estado_id, nombre, codigo, descripcion, activo, orden, creado_por, creado_en)
+VALUES 
+  (1, 1, 'Activo', 'ACT', 'Elemento en estado activo', TRUE, 1, 1, CURRENT_TIMESTAMP),
+  (2, 1, 'Inactivo', 'INA', 'Elemento en estado inactivo', TRUE, 2, 1, CURRENT_TIMESTAMP),
+  (3, 2, 'Habilitado', 'HAB', 'Elemento de seguridad habilitado', TRUE, 1, 1, CURRENT_TIMESTAMP),
+  (4, 2, 'Deshabilitado', 'DES', 'Elemento de seguridad deshabilitado', TRUE, 2, 1, CURRENT_TIMESTAMP);
 
--- ============================
--- 🔐 Datos de inicio para roles
--- ============================
-INSERT INTO roles (nombre, codigo, descripcion, estado_id) VALUES
-  ('Administrador', 'ADMIN', 'Rol con acceso total al sistema', 1),
-  ('Director', 'DIR', 'Rol con permisos de gestión escolar', 1),
-  ('Docente', 'DOC', 'Rol asignado a maestros', 1);
+-- =======================
+-- Insertar un usuario admin
+-- contraseña: admin123
+-- =======================
+INSERT INTO usuarios (
+  id, username, email, password_hash, nombres, primer_apellido, segundo_apellido, estado_id, telefono, foto_url, creado_por, creado_en
+) VALUES (
+  1, 'marcelo.chambi', 'admin@demo.com', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes',
+  3, '77777777', NULL, 1, CURRENT_TIMESTAMP
+);
 
--- ==============================
--- 📋 Datos de inicio para menús
--- ==============================
-INSERT INTO menus (nombre, icono, ruta, orden, tipo, mostrar, estado_id) VALUES
-  ('Panel', 'fas fa-tachometer-alt', '/dashboard', 1, 'link', TRUE, 1),
-  ('Gestión Usuarios', 'fas fa-users-cog', '/usuarios', 2, 'link', TRUE, 1),
-  ('Sucursales', 'fas fa-building', '/sucursales', 3, 'link', TRUE, 1);
+-- =======================
+-- Insertar roles
+-- =======================
+INSERT INTO roles (id, nombre, codigo, descripcion, estado_id, creado_por, creado_en)
+VALUES 
+  (1, 'Administrador', 'ADMIN', 'Rol con todos los permisos', 3, 1, CURRENT_TIMESTAMP);
 
--- ================================
--- 🔑 Datos de inicio para permisos
--- ================================
-INSERT INTO permisos (nombre, codigo, descripcion, menu_id, accion, estado_id) VALUES
-  ('Ver panel', 'PANEL_VIEW', 'Acceso al panel principal', 1, 'ver', 1),
-  ('Gestionar usuarios', 'USUARIOS_MANAGE', 'Crear/editar/eliminar usuarios', 2, 'gestion', 1),
-  ('Ver sucursales', 'SUCURSAL_VIEW', 'Ver listado de sucursales', 3, 'ver', 1),
-  ('Gestionar sucursales', 'SUCURSAL_MANAGE', 'Agregar/modificar sucursales', 3, 'gestion', 1);
+-- =======================
+-- Insertar usuario_rol
+-- =======================
+INSERT INTO usuario_rol (usuario_id, rol_id, estado_id, vigente_desde, creado_por, creado_en)
+VALUES 
+  (1, 1, 3, CURRENT_DATE, 1, CURRENT_TIMESTAMP);
 
--- ===============================
--- 👤 Datos de inicio para usuarios
--- ===============================
--- ⚠️ La contraseña es 'admin123' hasheada (ejemplo: usando bcrypt)
-INSERT INTO usuarios (username, email, password_hash, nombres, primer_apellido, segundo_apellido, estado_id, telefono) VALUES
-  ('marcelo.chambi', 'admin@sistema.edu', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes', 3, '70000000');
+-- =======================
+-- Insertar menús (2 niveles)
+-- =======================
+INSERT INTO menus (id, nombre, icono, ruta, orden, tipo, mostrar, padre_id, estado_id, creado_por, creado_en)
+VALUES
+  (1, 'Inicio', 'fas fa-home', '/inicio', 1, 'L', TRUE, NULL, 0, 1, CURRENT_TIMESTAMP),
+  (2, 'Seguridad', 'fas fa-lock', NULL, 2, 'L', TRUE, NULL, 0, 1, CURRENT_TIMESTAMP),
+  (3, 'Sucursales', 'fas fa-building', '/sucursales', 3, 'L', TRUE, NULL, 0, 1, CURRENT_TIMESTAMP),
+  (4, 'Clientes', 'fas fa-users', '/clientes', 4, 'L', TRUE, NULL, 0, 1, CURRENT_TIMESTAMP),
+  (5, 'Usuarios', 'fas fa-user', '/seguridad/usuarios', 1, 'L', TRUE, 2, 2, 1, CURRENT_TIMESTAMP),
+  (6, 'Roles', 'fas fa-user-tag', '/seguridad/roles', 2, 'L', TRUE, 2, 2, 1, CURRENT_TIMESTAMP),
+  (7, 'Permisos', 'fas fa-key', '/seguridad/permisos', 3, 'L', TRUE, 2, 2, 1, CURRENT_TIMESTAMP),
+  (8, 'Menús', 'fas fa-list', '/seguridad/menus', 4, 'L', TRUE, 2, 2, 1, CURRENT_TIMESTAMP);
 
--- ====================================
--- 📎 Datos de inicio para usuario_rol
--- ====================================
-INSERT INTO usuario_rol (usuario_id, rol_id, estado_id, vigente_desde) VALUES
-  (1, 1, 1, CURRENT_DATE);
+-- =======================
+-- Insertar permisos
+-- =======================
+INSERT INTO permisos (id, nombre, codigo, descripcion, menu_id, accion, estado_id, creado_por, creado_en)
+VALUES 
+  (1, 'Ver Usuarios', 'USUARIOS_VIEW', 'Permite ver usuarios', 5, 'view', 3, 1, CURRENT_TIMESTAMP),
+  (2, 'Crear Usuarios', 'USUARIOS_CREATE', 'Permite crear usuarios', 5, 'create', 3, 1, CURRENT_TIMESTAMP),
+  (3, 'Ver Roles', 'ROLES_VIEW', 'Permite ver roles', 6, 'view', 3, 1, CURRENT_TIMESTAMP),
+  (4, 'Ver Permisos', 'PERMISOS_VIEW', 'Permite ver permisos', 7, 'view', 3, 1, CURRENT_TIMESTAMP),
+  (5, 'Ver Menús', 'MENUS_VIEW', 'Permite ver menús', 8, 'view', 3, 1, CURRENT_TIMESTAMP);
 
--- =====================================
--- 🧩 Datos de inicio para rol_permiso
--- =====================================
-INSERT INTO rol_permiso (rol_id, permiso_id, estado_id, vigente_desde) VALUES
-  (1, 1, 1, CURRENT_DATE),
-  (1, 2, 1, CURRENT_DATE),
-  (1, 3, 1, CURRENT_DATE),
-  (1, 4, 1, CURRENT_DATE);
+-- =======================
+-- Insertar rol_permiso
+-- =======================
+INSERT INTO rol_permiso (rol_id, permiso_id, estado_id, vigente_desde, creado_por, creado_en)
+SELECT 1, id, 3, CURRENT_DATE, 1, CURRENT_TIMESTAMP FROM permisos;
 
--- ===========================================
--- 🧩 Datos de inicio para usuario_sucursal
--- ===========================================
-INSERT INTO usuario_sucursal (usuario_id, sucursal_id, estado_id) VALUES
-  (1, 1, 1),
-  (1, 2, 1);
+-- =======================
+-- Insertar sucursales
+-- =======================
+INSERT INTO sucursales (id, nombre, codigo, descripcion, direccion, telefono, email, estado_id, creado_por, creado_en)
+VALUES 
+  (1, 'Central', 'SUC-CEN', 'Sucursal principal', 'Av. Principal #123', '71234567', 'central@demo.com', 1, 1, CURRENT_TIMESTAMP),
+  (2, 'Norte', 'SUC-NOR', 'Sucursal zona norte', 'Av. Norte #45', '73456789', 'norte@demo.com', 1, 1, CURRENT_TIMESTAMP);
+
+-- =======================
+-- Asociar usuario a sucursales
+-- =======================
+INSERT INTO usuario_sucursal (usuario_id, sucursal_id, estado_id, creado_por, creado_en)
+VALUES 
+  (1, 1, 1, 1, CURRENT_TIMESTAMP),
+  (1, 2, 1, 1, CURRENT_TIMESTAMP);

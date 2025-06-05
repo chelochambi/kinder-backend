@@ -5,10 +5,13 @@ import (
 	"net/http"
 	"os"
 
+	"fmt"
+
 	"github.com/chelochambi/kinder-backend/internal/db"
 	"github.com/chelochambi/kinder-backend/internal/router"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors" // <-- Agregamos esta importación
+	"github.com/rs/cors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -18,6 +21,13 @@ func main() {
 	}
 
 	conn := db.GetDB()
+
+	password := "admin123"
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(hash))
 
 	// Tu router personalizado
 	r := router.NewRouter(conn)
