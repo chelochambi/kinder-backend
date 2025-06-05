@@ -62,3 +62,4 @@ OAuth2 o inicio con Google/Microsoft si aplica
 go get github.com/golang-jwt/jwt/v5
 go get golang.org/x/crypto/bcrypt
 go get github.com/jackc/pgx/v5/pgconn@v5.7.5
+go get github.com/rs/cors
