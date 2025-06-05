@@ -14,7 +14,7 @@ func ListarUsuariosHandler(db *sql.DB) http.HandlerFunc {
 		query := `
 		SELECT u.id, u.username, u.email, u.nombres, u.primer_apellido, u.segundo_apellido, 
 		       u.telefono, u.foto_url,
-		       e.id, e.nombre, e.codigo
+		       e.id, e.nombre, e.codigo, e.descripcion
 		FROM usuarios u
 		INNER JOIN estados e ON u.estado_id = e.id
 		ORDER BY u.id;
@@ -37,7 +37,7 @@ func ListarUsuariosHandler(db *sql.DB) http.HandlerFunc {
 			err := rows.Scan(
 				&u.ID, &u.Username, &u.Email, &u.Nombres, &u.PrimerApellido, &u.SegundoApellido,
 				&telefono, &fotoURL,
-				&u.Estado.ID, &u.Estado.Nombre, &u.Estado.Codigo,
+				&u.Estado.ID, &u.Estado.Nombre, &u.Estado.Codigo, &u.Estado.Descripcion,
 			)
 			if err != nil {
 				http.Error(w, "Error al leer datos", http.StatusInternalServerError)

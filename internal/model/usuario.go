@@ -1,11 +1,5 @@
 package model
 
-type Estado struct {
-	ID     int    `json:"id"`
-	Nombre string `json:"nombre"`
-	Codigo string `json:"codigo"`
-}
-
 type Usuario struct {
 	ID              int    `json:"id"`
 	Username        string `json:"username"`
@@ -15,5 +9,6 @@ type Usuario struct {
 	SegundoApellido string `json:"segundo_apellido"`
 	Telefono        string `json:"telefono"`
 	FotoURL         string `json:"foto_url"`
+	PasswordHash    string `json:"-"` // nunca se expone
 	Estado          Estado `json:"estado"`
 }
