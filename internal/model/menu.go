@@ -7,6 +7,6 @@ type Menu struct {
 	Ruta     string  `json:"ruta"`
 	Tipo     string  `json:"tipo"`
 	Mostrar  bool    `json:"mostrar"`
-	PadreID  *int    `json:"padre_id"`
+	PadreID  *int    `json:"padre_id,omitempty"`
 	Submenus []*Menu `json:"submenus,omitempty"`
 }
