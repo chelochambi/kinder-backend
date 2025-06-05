@@ -15,7 +15,8 @@ VALUES
   (1, 1, 'Activo', 'ACT', 'Elemento en estado activo', TRUE, 1, 1, CURRENT_TIMESTAMP),
   (2, 1, 'Inactivo', 'INA', 'Elemento en estado inactivo', TRUE, 2, 1, CURRENT_TIMESTAMP),
   (3, 2, 'Habilitado', 'HAB', 'Elemento de seguridad habilitado', TRUE, 1, 1, CURRENT_TIMESTAMP),
-  (4, 2, 'Deshabilitado', 'DES', 'Elemento de seguridad deshabilitado', TRUE, 2, 1, CURRENT_TIMESTAMP);
+  (4, 2, 'Deshabilitado', 'DES', 'Elemento de seguridad deshabilitado', TRUE, 2, 1, CURRENT_TIMESTAMP),
+  ;
 
 -- =======================
 -- Insertar un usuario admin
@@ -61,11 +62,10 @@ VALUES
 -- =======================
 INSERT INTO permisos (id, nombre, codigo, descripcion, menu_id, accion, estado_id, creado_por, creado_en)
 VALUES 
-  (1, 'Ver Usuarios', 'USUARIOS_VIEW', 'Permite ver usuarios', 5, 'view', 3, 1, CURRENT_TIMESTAMP),
-  (2, 'Crear Usuarios', 'USUARIOS_CREATE', 'Permite crear usuarios', 5, 'create', 3, 1, CURRENT_TIMESTAMP),
-  (3, 'Ver Roles', 'ROLES_VIEW', 'Permite ver roles', 6, 'view', 3, 1, CURRENT_TIMESTAMP),
-  (4, 'Ver Permisos', 'PERMISOS_VIEW', 'Permite ver permisos', 7, 'view', 3, 1, CURRENT_TIMESTAMP),
-  (5, 'Ver Menús', 'MENUS_VIEW', 'Permite ver menús', 8, 'view', 3, 1, CURRENT_TIMESTAMP);
+  (1, 'Listar', 'USUARIOS_VIEW', 'Permite ver usuarios', 5, 'view', 3, 1, CURRENT_TIMESTAMP),
+  (2, 'Crear', 'USUARIOS_CREATE', 'Permite crear usuarios', 5, 'create', 3, 1, CURRENT_TIMESTAMP),
+  (3, 'Modificar', 'ROLES_VIEW', 'Permite ver roles', 6, 'view', 3, 1, CURRENT_TIMESTAMP),
+  (4, 'Eliminar', 'PERMISOS_VIEW', 'Permite ver permisos', 7, 'view', 3, 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar rol_permiso

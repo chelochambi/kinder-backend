@@ -28,12 +28,13 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		var passwordHash string
 		var telefono, fotoURL sql.NullString
 
-		// Consulta principal del usuario
+		// Consulta principal del usuario, usando el código 'HAB'
 		query := `
 			SELECT u.id, u.username, u.email, u.nombres, u.primer_apellido, u.segundo_apellido,
 			       u.telefono, u.foto_url, u.password_hash
 			FROM usuarios u
-			WHERE u.username = $1 AND u.estado_id = 3
+			JOIN estados e ON u.estado_id = e.id
+			WHERE u.username = $1 AND e.codigo = 'HAB'
 		`
 
 		err := db.QueryRowContext(context.Background(), query, req.Username).Scan(
@@ -57,7 +58,6 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			u.FotoURL = fotoURL.String
 		}
 
-		// TOKEN
 		token, err := security.GenerarJWT(u.ID, u.Username)
 		if err != nil {
 			http.Error(w, "Error generando token", http.StatusInternalServerError)
@@ -65,7 +65,13 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		// ROLES
-		rows, _ := db.Query(`SELECT r.codigo FROM usuario_rol ur JOIN roles r ON ur.rol_id = r.id WHERE ur.usuario_id = $1 AND ur.estado_id = 1`, u.ID)
+		rows, _ := db.Query(`
+			SELECT r.codigo
+			FROM usuario_rol ur
+			JOIN roles r ON ur.rol_id = r.id
+			JOIN estados e ON ur.estado_id = e.id
+			WHERE ur.usuario_id = $1 AND e.codigo = 'HAB'
+		`, u.ID)
 		for rows.Next() {
 			var codigo string
 			rows.Scan(&codigo)
@@ -79,7 +85,9 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			FROM usuario_rol ur
 			JOIN rol_permiso rp ON ur.rol_id = rp.rol_id
 			JOIN permisos p ON rp.permiso_id = p.id
-			WHERE ur.usuario_id = $1 AND ur.estado_id = 1 AND rp.estado_id = 1
+			JOIN estados e1 ON ur.estado_id = e1.id
+			JOIN estados e2 ON rp.estado_id = e2.id
+			WHERE ur.usuario_id = $1 AND e1.codigo = 'HAB' AND e2.codigo = 'HAB'
 		`, u.ID)
 		for rows.Next() {
 			var codigo string
@@ -107,7 +115,8 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			JOIN rol_permiso rp ON ur.rol_id = rp.rol_id
 			JOIN permisos p ON rp.permiso_id = p.id
 			JOIN menus m ON m.id = p.menu_id
-			WHERE ur.usuario_id = $1 AND m.estado_id = 1
+			JOIN estados e ON m.estado_id = e.id
+			WHERE ur.usuario_id = $1 AND e.codigo = 'HAB'
 		`, u.ID)
 
 		for rows.Next() {
@@ -117,7 +126,6 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 		rows.Close()
 
-		// Armar árbol de menús
 		for _, item := range flatMenus {
 			menu := &model.Menu{
 				ID:      item.ID,
@@ -131,8 +139,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 		for _, item := range flatMenus {
 			if item.PadreID.Valid {
-				padre := menuMap[int(item.PadreID.Int64)]
-				if padre != nil {
+				if padre := menuMap[int(item.PadreID.Int64)]; padre != nil {
 					padre.Submenus = append(padre.Submenus, menuMap[item.ID])
 				}
 			} else {
@@ -145,7 +152,8 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			SELECT s.id, s.nombre
 			FROM usuario_sucursal us
 			JOIN sucursales s ON s.id = us.sucursal_id
-			WHERE us.usuario_id = $1 AND us.estado_id = 1
+			JOIN estados e ON us.estado_id = e.id
+			WHERE us.usuario_id = $1 AND e.codigo = 'ACT'
 		`, u.ID)
 
 		for rows.Next() {
