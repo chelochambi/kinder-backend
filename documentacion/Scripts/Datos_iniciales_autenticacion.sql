@@ -56,7 +56,7 @@ INSERT INTO permisos (nombre, codigo, descripcion, menu_id, accion, estado_id) V
 -- ===============================
 -- ⚠️ La contraseña es 'admin123' hasheada (ejemplo: usando bcrypt)
 INSERT INTO usuarios (username, email, password_hash, nombres, primer_apellido, segundo_apellido, estado_id, telefono) VALUES
-  ('admin', 'admin@sistema.edu', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Super', 'Admin', 'Sistema', 3, '70000000');
+  ('marcelo.chambi', 'admin@sistema.edu', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes', 3, '70000000');
 
 -- ====================================
 -- 📎 Datos de inicio para usuario_rol
