@@ -28,7 +28,6 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		var passwordHash string
 		var telefono, fotoURL sql.NullString
 
-		// Consulta principal del usuario, usando el código 'HAB'
 		query := `
 			SELECT u.id, u.username, u.email, u.nombres, u.primer_apellido, u.segundo_apellido,
 			       u.telefono, u.foto_url, u.password_hash
@@ -36,7 +35,6 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			JOIN estados e ON u.estado_id = e.id
 			WHERE u.username = $1 AND e.codigo = 'HAB'
 		`
-
 		err := db.QueryRowContext(context.Background(), query, req.Username).Scan(
 			&u.ID, &u.Username, &u.Email, &u.Nombres, &u.PrimerApellido, &u.SegundoApellido,
 			&telefono, &fotoURL, &passwordHash,
@@ -79,71 +77,74 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 		rows.Close()
 
-		// PERMISOS
-		rows, _ = db.Query(`
-			SELECT DISTINCT p.codigo
-			FROM usuario_rol ur
-			JOIN rol_permiso rp ON ur.rol_id = rp.rol_id
-			JOIN permisos p ON rp.permiso_id = p.id
-			JOIN estados e1 ON ur.estado_id = e1.id
-			JOIN estados e2 ON rp.estado_id = e2.id
-			WHERE ur.usuario_id = $1 AND e1.codigo = 'HAB' AND e2.codigo = 'HAB'
-		`, u.ID)
-		for rows.Next() {
-			var codigo string
-			rows.Scan(&codigo)
-			u.Permisos = append(u.Permisos, codigo)
-		}
-		rows.Close()
-
-		// MENUS
-		type MenuItem struct {
-			ID      int
+		// MENÚS + PERMISOS
+		type MenuRow struct {
+			MenuID  int
 			Nombre  string
 			Icono   string
 			Ruta    string
 			Tipo    string
 			Mostrar bool
 			PadreID sql.NullInt64
+			Permiso string
 		}
-		menuMap := map[int]*model.Menu{}
-		var flatMenus []MenuItem
 
 		rows, _ = db.Query(`
-			SELECT DISTINCT m.id, m.nombre, m.icono, m.ruta, m.tipo, m.mostrar, m.padre_id
+			SELECT DISTINCT m.id, m.nombre, m.icono, m.ruta, m.tipo, m.mostrar, m.padre_id, p.codigo
 			FROM usuario_rol ur
-			JOIN rol_permiso rp ON ur.rol_id = rp.rol_id
-			JOIN permisos p ON rp.permiso_id = p.id
-			JOIN menus m ON m.id = p.menu_id
-			JOIN estados e ON m.estado_id = e.id
-			WHERE ur.usuario_id = $1 AND e.codigo = 'HAB'
+			JOIN rol_menu_permiso rmp ON ur.rol_id = rmp.rol_id
+			JOIN permisos p ON rmp.permiso_id = p.id
+			JOIN menus m ON rmp.menu_id = m.id
+			JOIN estados e1 ON ur.estado_id = e1.id
+			JOIN estados e2 ON rmp.estado_id = e2.id
+			JOIN estados e3 ON m.estado_id = e3.id
+			WHERE ur.usuario_id = $1 AND e1.codigo = 'HAB' AND e2.codigo = 'HAB' AND e3.codigo = 'HAB'
 		`, u.ID)
 
+		menuMap := map[int]*model.Menu{}
+		permMap := map[int][]string{}
+		var flatMenuData []MenuRow
+
 		for rows.Next() {
-			var item MenuItem
-			rows.Scan(&item.ID, &item.Nombre, &item.Icono, &item.Ruta, &item.Tipo, &item.Mostrar, &item.PadreID)
-			flatMenus = append(flatMenus, item)
+			var row MenuRow
+			rows.Scan(&row.MenuID, &row.Nombre, &row.Icono, &row.Ruta, &row.Tipo, &row.Mostrar, &row.PadreID, &row.Permiso)
+			flatMenuData = append(flatMenuData, row)
+			permMap[row.MenuID] = append(permMap[row.MenuID], row.Permiso)
 		}
 		rows.Close()
 
-		for _, item := range flatMenus {
-			menu := &model.Menu{
-				ID:      item.ID,
-				Nombre:  item.Nombre,
-				Icono:   item.Icono,
-				Ruta:    item.Ruta,
-				Tipo:    item.Tipo,
-				Mostrar: item.Mostrar,
+		// Construir los menús base
+		for _, row := range flatMenuData {
+			if _, exists := menuMap[row.MenuID]; !exists {
+				menu := &model.Menu{
+					ID:       row.MenuID,
+					Nombre:   row.Nombre,
+					Icono:    row.Icono,
+					Ruta:     row.Ruta,
+					Tipo:     row.Tipo,
+					Mostrar:  row.Mostrar,
+					Permisos: permMap[row.MenuID],
+				}
+				menuMap[row.MenuID] = menu
 			}
-			menuMap[menu.ID] = menu
 		}
-		for _, item := range flatMenus {
-			if item.PadreID.Valid {
-				if padre := menuMap[int(item.PadreID.Int64)]; padre != nil {
-					padre.Submenus = append(padre.Submenus, menuMap[item.ID])
+
+		// Construir jerarquía de menús sin duplicados
+		submenuAdded := make(map[int]bool)
+		for _, row := range flatMenuData {
+			menu := menuMap[row.MenuID]
+			if row.PadreID.Valid {
+				padreID := int(row.PadreID.Int64)
+				padre := menuMap[padreID]
+				if padre != nil && !submenuAdded[menu.ID] {
+					padre.Submenus = append(padre.Submenus, menu)
+					submenuAdded[menu.ID] = true
 				}
 			} else {
-				u.Menus = append(u.Menus, menuMap[item.ID])
+				if !submenuAdded[menu.ID] {
+					u.Menus = append(u.Menus, menu)
+					submenuAdded[menu.ID] = true
+				}
 			}
 		}
 
@@ -163,6 +164,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 		rows.Close()
 
+		// RESPUESTA FINAL
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"token":   token,

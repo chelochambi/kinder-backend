@@ -51,7 +51,6 @@ CREATE TABLE usuarios (
     actualizado_por INTEGER
 );
 
-
 -- =======================
 -- 🔐 Tabla: roles
 -- =======================
@@ -88,14 +87,16 @@ CREATE TABLE menus (
 
 -- =======================
 -- 🔑 Tabla: permisos
+-- LIS-listar
+-- CRE-crear
+-- ACT-actualizar
+-- ELI-eliminar
 -- =======================
 CREATE TABLE permisos (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     codigo VARCHAR(100) UNIQUE,
     descripcion TEXT,
-    menu_id INTEGER REFERENCES menus(id),
-    accion VARCHAR(50),
     estado_id INTEGER REFERENCES estados(id),
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     actualizado_en TIMESTAMP,
@@ -103,6 +104,21 @@ CREATE TABLE permisos (
     actualizado_por INTEGER
 );
 
+-- =======================
+-- 🔑 Tabla: rol_menu
+-- =======================
+CREATE TABLE rol_menu_permiso (
+    id SERIAL PRIMARY KEY,
+    rol_id INTEGER REFERENCES roles(id),
+    menu_id INTEGER REFERENCES menus(id),
+    permiso_id INTEGER REFERENCES permisos(id),
+    estado_id INTEGER REFERENCES estados(id),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP,
+    creado_por INTEGER,
+    actualizado_por INTEGER,
+    UNIQUE(rol_id, menu_id, permiso_id)
+);
 -- =======================
 -- 📎 Tabla: usuario_rol
 -- =======================
@@ -110,22 +126,6 @@ CREATE TABLE usuario_rol (
     id SERIAL PRIMARY KEY,
     usuario_id INTEGER REFERENCES usuarios(id),
     rol_id INTEGER REFERENCES roles(id),
-    estado_id INTEGER REFERENCES estados(id),
-    vigente_desde DATE,
-    vigente_hasta DATE,
-    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    creado_por INTEGER,
-    actualizado_en TIMESTAMP,
-    actualizado_por INTEGER
-);
-
--- =======================
--- 🧩 Tabla: rol_permiso
--- =======================
-CREATE TABLE rol_permiso (
-    id SERIAL PRIMARY KEY,
-    rol_id INTEGER REFERENCES roles(id),
-    permiso_id INTEGER REFERENCES permisos(id),
     estado_id INTEGER REFERENCES estados(id),
     vigente_desde DATE,
     vigente_hasta DATE,
