@@ -5,7 +5,8 @@
 INSERT INTO tipo_estado (id, nombre, descripcion, codigo, creado_por, creado_en)
 VALUES 
   (1, 'General', 'Estados de uso general del sistema', 'GEN', 1, CURRENT_TIMESTAMP),
-  (2, 'Seguridad', 'Estados relacionados a usuarios, roles, etc.', 'SEG', 1, CURRENT_TIMESTAMP);
+  (2, 'Seguridad', 'Estados relacionados a usuarios, roles, etc.', 'SEG', 1, CURRENT_TIMESTAMP),
+  (3, 'Usuario', 'Estados específicos para usuarios', 'USR', 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar datos en estados
@@ -15,7 +16,10 @@ VALUES
   (1, 1, 'Activo', 'ACT', 'Elemento en estado activo', TRUE, 1, 1, CURRENT_TIMESTAMP),
   (2, 1, 'Inactivo', 'INA', 'Elemento en estado inactivo', TRUE, 2, 1, CURRENT_TIMESTAMP),
   (3, 2, 'Habilitado', 'HAB', 'Elemento de seguridad habilitado', TRUE, 1, 1, CURRENT_TIMESTAMP),
-  (4, 2, 'Deshabilitado', 'DES', 'Elemento de seguridad deshabilitado', TRUE, 2, 1, CURRENT_TIMESTAMP);
+  (4, 2, 'Deshabilitado', 'DES', 'Elemento de seguridad deshabilitado', TRUE, 2, 1, CURRENT_TIMESTAMP),
+  (5, 3, 'Activo', 'UACT', 'Usuario activo', TRUE, 1, 1, CURRENT_TIMESTAMP),
+  (6, 3, 'Bloqueado', 'UBLQ', 'Usuario bloqueado', TRUE, 2, 1, CURRENT_TIMESTAMP),
+  (7, 3, 'Bloqueado aut', 'UBLQ', 'Usuario bloqueado autimático', TRUE, 3, 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar un usuario admin

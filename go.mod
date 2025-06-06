@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.23.9
 
 require (
+	github.com/go-chi/chi/v5 v5.2.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

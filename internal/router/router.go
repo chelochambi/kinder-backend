@@ -6,23 +6,35 @@ import (
 
 	"github.com/chelochambi/kinder-backend/internal/handler"
 	"github.com/chelochambi/kinder-backend/internal/middleware"
+	"github.com/chelochambi/kinder-backend/internal/repository"
+	"github.com/chelochambi/kinder-backend/internal/service"
 	"github.com/gorilla/mux"
 )
 
 func NewRouter(db *sql.DB) http.Handler {
 	r := mux.NewRouter()
 
-	// Endpoint público (sin protección)
+	// Público
+	r.HandleFunc("/auth/login", handler.LoginHandler(db)).Methods("POST")
 	r.HandleFunc("/api/tipo_estado", handler.ListarTipoEstado(db)).Methods("GET")
 
-	// Endpoint protegido con JWT
-	r.Handle("/api/usuarios", middleware.AuthMiddleware(http.HandlerFunc(handler.ListarUsuariosHandler(db)))).Methods("GET")
+	// Protegido - Auth Middleware
+	api := r.PathPrefix("/api").Subrouter()
+	api.Use(middleware.AuthMiddleware)
 
-	// Endpoint protegido con JWT para obtener un usuario específico
-	r.Handle("/auth/me", middleware.AuthMiddleware(http.HandlerFunc(handler.AuthMeHandler(db)))).Methods("GET")
+	// Handler para /auth/me
+	api.HandleFunc("/auth/me", handler.AuthMeHandler(db)).Methods("GET")
 
-	// Endpoint para login, abierto al público
-	r.HandleFunc("/auth/login", handler.LoginHandler(db)).Methods("POST")
+	// ---------- Usuarios ----------
+	// Inicializamos repositorio, servicio y handler
+	usuarioRepo := repository.NewUsuarioRepository(db)
+	usuarioService := service.NewUsuarioService(usuarioRepo)
+	usuarioHandler := handler.NewUsuarioHandler(usuarioService)
+
+	api.HandleFunc("/usuarios", usuarioHandler.Listar).Methods("GET")
+	api.HandleFunc("/usuarios", usuarioHandler.Crear).Methods("POST")
+	api.HandleFunc("/usuarios/{id:[0-9]+}", usuarioHandler.Actualizar).Methods("PUT")
+	api.HandleFunc("/usuarios/{id:[0-9]+}/estado", usuarioHandler.CambiarEstado).Methods("PUT")
 
 	return r
 }

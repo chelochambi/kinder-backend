@@ -45,7 +45,7 @@ CREATE TABLE usuarios (
     ultimo_login TIMESTAMP,
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     telefono VARCHAR(20),
-    foto_url TEXT,
+    foto_url TEXT DEFAULT '/src/assets/fotos_usuarios/sin_foto.png',
     actualizado_en TIMESTAMP,
     creado_por INTEGER,
     actualizado_por INTEGER

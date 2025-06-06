@@ -33,7 +33,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			       u.telefono, u.foto_url, u.password_hash
 			FROM usuarios u
 			JOIN estados e ON u.estado_id = e.id
-			WHERE u.username = $1 AND e.codigo = 'HAB'
+			WHERE u.username = $1 AND e.codigo = 'UACT'
 		`
 		err := db.QueryRowContext(context.Background(), query, req.Username).Scan(
 			&u.ID, &u.Username, &u.Email, &u.Nombres, &u.PrimerApellido, &u.SegundoApellido,
