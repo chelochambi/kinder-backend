@@ -29,7 +29,7 @@ INSERT INTO usuarios (
   id, username, email, password_hash, nombres, primer_apellido, segundo_apellido, estado_id, telefono, foto_url, creado_por, creado_en
 ) VALUES (
   1, 'marcelo.chambi', 'admin@demo.com', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes',
-  3, '77777777', NULL, 1, CURRENT_TIMESTAMP
+  5, '77777777', NULL, 1, CURRENT_TIMESTAMP
 );
 
 -- =======================
