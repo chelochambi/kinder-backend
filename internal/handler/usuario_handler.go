@@ -8,6 +8,7 @@ import (
 
 	"github.com/chelochambi/kinder-backend/internal/model"
 	"github.com/chelochambi/kinder-backend/internal/service"
+	"github.com/gorilla/mux"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -60,10 +61,18 @@ func (h *UsuarioHandler) Crear(w http.ResponseWriter, r *http.Request) {
 
 func (h *UsuarioHandler) Actualizar(w http.ResponseWriter, r *http.Request) {
 	var u model.Usuario
-	idStr := chi.URLParam(r, "id")
+
+	// Cambiado para usar mux
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	if idStr == "" {
+		http.Error(w, "Falta el parámetro ID en la URL", http.StatusBadRequest)
+		return
+	}
+
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
+		http.Error(w, "ID inválido: debe ser un número", http.StatusBadRequest)
 		return
 	}
 	u.ID = id

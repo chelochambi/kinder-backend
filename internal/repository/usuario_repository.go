@@ -46,14 +46,16 @@ func (r *UsuarioRepository) GetAll(ctx context.Context) ([]model.Usuario, error)
 	return usuarios, nil
 }
 
+// Crear un nuevo usuario
 func (r *UsuarioRepository) Create(ctx context.Context, u *model.Usuario) error {
 	_, err := r.DB.ExecContext(ctx, `
 		INSERT INTO usuarios (username, email, nombres, primer_apellido, segundo_apellido, telefono, foto_url, password_hash, estado_id)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		u.Username, u.Email, u.Nombres, u.PrimerApellido, u.SegundoApellido, u.Telefono, u.FotoURL, u.PasswordHash, 1)
+		u.Username, u.Email, u.Nombres, u.PrimerApellido, u.SegundoApellido, u.Telefono, u.FotoURL, u.PasswordHash, 7) // 7 es el ID del estado bloqueado automático
 	return err
 }
 
+// Actualizar usuarios
 func (r *UsuarioRepository) Update(ctx context.Context, u *model.Usuario) error {
 	result, err := r.DB.ExecContext(ctx, `
 		UPDATE usuarios SET

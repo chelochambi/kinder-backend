@@ -29,7 +29,7 @@ INSERT INTO usuarios (
   id, username, email, password_hash, nombres, primer_apellido, segundo_apellido, estado_id, telefono, foto_url, creado_por, creado_en
 ) VALUES (
   1, 'marcelo.chambi', 'admin@demo.com', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes',
-  5, '77777777', NULL, 1, CURRENT_TIMESTAMP
+  5, '77777777', 'sin_foto.png', 1, CURRENT_TIMESTAMP
 );
 
 -- =======================
@@ -51,14 +51,14 @@ VALUES
 -- =======================
 INSERT INTO menus (id, nombre, icono, ruta, orden, tipo, mostrar, padre_id, estado_id, creado_por, creado_en)
 VALUES
-  (1, 'Inicio', 'fas fa-home', '/', 1, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (2, 'Seguridad', 'fas fa-lock', '/seguridad', 2, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (3, 'Sucursales', 'fas fa-building', '/sucursales', 3, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (4, 'Clientes', 'fas fa-users', '/clientes', 4, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (5, 'Usuarios', 'fas fa-user', '/seguridad/usuarios', 1, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (6, 'Roles', 'fas fa-user-tag', '/seguridad/roles', 2, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (7, 'Permisos', 'fas fa-key', '/seguridad/permisos', 3, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (8, 'Menús', 'fas fa-list', '/seguridad/menus', 4, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP);
+  (1, 'Inicio', 'FaHome', '/', 1, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (2, 'Seguridad', 'FaLock', '/seguridad', 2, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (3, 'Sucursales', 'FaBuilding', '/sucursales', 3, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (4, 'Clientes', 'FaUsers', '/clientes', 4, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (5, 'Usuarios', 'FaUser', '/seguridad/usuarios', 1, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (6, 'Roles', 'FaUserTag', '/seguridad/roles', 2, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (7, 'Permisos', 'FaKey', '/seguridad/permisos', 3, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (8, 'Menús', 'FaList', '/seguridad/menus', 4, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar permisos
