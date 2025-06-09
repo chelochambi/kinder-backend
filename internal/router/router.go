@@ -33,7 +33,7 @@ func NewRouter(db *sql.DB) http.Handler {
 
 	api.HandleFunc("/usuarios", usuarioHandler.Listar).Methods("GET")
 	api.HandleFunc("/usuarios", usuarioHandler.Crear).Methods("POST")
-	api.HandleFunc("/usuarios/{id:[0-9]+}", usuarioHandler.Actualizar).Methods("PATCH")
+	api.HandleFunc("/usuarios/{id:[0-9]+}", usuarioHandler.Actualizar).Methods("PUT")
 	api.HandleFunc("/usuarios/{id:[0-9]+}/estado", usuarioHandler.CambiarEstado).Methods("PUT")
 
 	return r
