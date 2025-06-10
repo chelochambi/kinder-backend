@@ -108,7 +108,15 @@ func (h *UsuarioHandler) Actualizar(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UsuarioHandler) CambiarEstado(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
 	var payload struct {
 		EstadoID int `json:"estado_id"`
 	}
@@ -116,8 +124,19 @@ func (h *UsuarioHandler) CambiarEstado(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "JSON inválido", http.StatusBadRequest)
 		return
 	}
-	if err := h.Service.CambiarEstado(r.Context(), id, payload.EstadoID); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	err = h.Service.CambiarEstado(r.Context(), id, payload.EstadoID)
+	if err != nil {
+		if err.Error() == "estado no válido o inactivo" {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"mensaje": "Estado del usuario actualizado exitosamente",
+	})
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"errors"
 	"strings"
@@ -111,8 +112,29 @@ func (r *UsuarioRepository) Update(ctx context.Context, u *model.Usuario) error 
 }
 
 func (r *UsuarioRepository) ChangeEstado(ctx context.Context, id int, estadoID int) error {
-	_, err := r.DB.ExecContext(ctx, `
-		UPDATE usuarios SET estado_id = $1 WHERE id = $2
-	`, estadoID, id)
+	log.Printf("ChangeEstado llamado con estadoID=%d para usuarioID=%d", estadoID, id)
+
+	var existe bool
+	query := `
+        SELECT EXISTS (
+            SELECT 1 FROM estados e
+            JOIN tipo_estado te ON e.tipo_estado_id = te.id
+            WHERE e.id = $1 AND e.activo = true AND te.codigo = 'USR'
+        )
+    `
+	err := r.DB.QueryRowContext(ctx, query, estadoID).Scan(&existe)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Existe estado válido? %v", existe)
+	if !existe {
+		return fmt.Errorf("estado no válido o inactivo")
+	}
+
+	_, err = r.DB.ExecContext(ctx, `
+        UPDATE usuarios SET estado_id = $1 WHERE id = $2
+    `, estadoID, id)
+
 	return err
 }
