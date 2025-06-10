@@ -37,7 +37,7 @@ CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT NOT NULL DEFAULT '12345678',
     nombres VARCHAR(100),
     primer_apellido VARCHAR(100),
     segundo_apellido VARCHAR(100),

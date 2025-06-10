@@ -9,6 +9,11 @@ type Usuario struct {
 	SegundoApellido string `json:"segundo_apellido"`
 	Telefono        string `json:"telefono"`
 	FotoURL         string `json:"foto_url"`
-	PasswordHash    string `json:"-"` // nunca se expone
-	Estado          Estado `json:"estado"`
+
+	Password     string `json:"password"` // <- se recibe desde el JSON
+	PasswordHash string `json:"-"`        // <- se genera internamente
+
+	Estado         Estado `json:"estado"`
+	CreadoPor      int    `json:"creado_por,omitempty"`
+	ActualizadoPor int    `json:"actualizado_por,omitempty"`
 }

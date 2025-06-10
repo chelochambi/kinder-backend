@@ -3,8 +3,11 @@ package service
 import (
 	"context"
 
+	"fmt"
+
 	"github.com/chelochambi/kinder-backend/internal/model"
 	"github.com/chelochambi/kinder-backend/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UsuarioService struct {
@@ -20,6 +23,18 @@ func (s *UsuarioService) ListarUsuarios(ctx context.Context) ([]model.Usuario, e
 }
 
 func (s *UsuarioService) CrearUsuario(ctx context.Context, u *model.Usuario) error {
+	// Hashear la contraseña si viene
+	if u.Password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return fmt.Errorf("error al hashear la contraseña: %w", err)
+		}
+		u.PasswordHash = string(hash)
+	} else {
+		return fmt.Errorf("la contraseña es obligatoria")
+	}
+
+	// Llamar al repositorio
 	return s.Repo.Create(ctx, u)
 }
 

@@ -27,10 +27,12 @@ VALUES
 -- =======================
 INSERT INTO usuarios (
   id, username, email, password_hash, nombres, primer_apellido, segundo_apellido, estado_id, telefono, foto_url, creado_por, creado_en
-) VALUES (
-  1, 'marcelo.chambi', 'admin@demo.com', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes',
-  5, '77777777', 'sin_foto.png', 1, CURRENT_TIMESTAMP
-);
+) VALUES 
+  (1, 'marcelo.chambi', 'marcelo.chambi@demo.com', '$2a$10$ShA2eCyjautV9HjkTx2.auUimgetTZw56PtUkolwOvJEnaYqgELiC', 'Marcelo', 'Chambi', 'Paredes',
+  5, '77777777', 'sin_foto.png', 1, CURRENT_TIMESTAMP),
+  (2, 'juan.perez', 'juan.perez@demo.com', '$2a$10$5PBZK0mf0RFh4Zb/2Us9I.TIHZEgH0ZoxZED4KA4vRB5s.JYjnwQG', 'Juan', 'Peres', 'Guzman',
+  5, '77777777', 'sin_foto.png', 1, CURRENT_TIMESTAMP);
+
 
 -- =======================
 -- Insertar roles

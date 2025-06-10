@@ -22,7 +22,9 @@ func main() {
 
 	conn := db.GetDB()
 
-	password := "admin123"
+	//password := "admin123"
+	password := "secreta123"
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)

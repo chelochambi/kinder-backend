@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"log"
+
 	"github.com/chelochambi/kinder-backend/internal/model"
 	"github.com/chelochambi/kinder-backend/internal/security"
 	"github.com/chelochambi/kinder-backend/internal/utils"
@@ -35,19 +37,26 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			JOIN estados e ON u.estado_id = e.id
 			WHERE u.username = $1 AND e.codigo = 'UACT'
 		`
+
 		err := db.QueryRowContext(context.Background(), query, req.Username).Scan(
 			&u.ID, &u.Username, &u.Email, &u.Nombres, &u.PrimerApellido, &u.SegundoApellido,
 			&telefono, &fotoURL, &passwordHash,
 		)
+
 		if err != nil {
 			http.Error(w, "Usuario no encontrado o inactivo", http.StatusUnauthorized)
 			return
 		}
 
-		if err := utils.CompararPasswordHash(req.Password, passwordHash); err != nil {
+		// código de análisis
+		errHash := utils.CompararPasswordHash(req.Password, passwordHash)
+		if errHash != nil {
+			log.Printf("Entró en errHash != nil - Contraseña incorrecta %s", u.Username)
 			http.Error(w, "Contraseña incorrecta", http.StatusUnauthorized)
 			return
 		}
+		log.Println("Contraseña válida, continuando con login...")
+		// Si llegamos aquí, la contraseña es correcta
 
 		if telefono.Valid {
 			u.Telefono = telefono.String
@@ -63,20 +72,29 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		// ROLES
-		rows, _ := db.Query(`
+		rows, err := db.Query(`
 			SELECT r.codigo
 			FROM usuario_rol ur
 			JOIN roles r ON ur.rol_id = r.id
 			JOIN estados e ON ur.estado_id = e.id
 			WHERE ur.usuario_id = $1 AND e.codigo = 'HAB'
 		`, u.ID)
+		if err != nil {
+			log.Println("Error al obtener roles:", err)
+			http.Error(w, "Error obteniendo roles", http.StatusInternalServerError)
+			return
+		}
 		for rows.Next() {
 			var codigo string
 			rows.Scan(&codigo)
 			u.Roles = append(u.Roles, codigo)
 		}
 		rows.Close()
-
+		if len(u.Roles) == 0 {
+			log.Println("Usuario sin roles habilitados:", u.Username)
+			http.Error(w, "Contraseña incorrecta", http.StatusUnauthorized) // Mensaje neutro
+			return
+		}
 		// MENÚS + PERMISOS
 		type MenuRow struct {
 			MenuID  int
@@ -89,7 +107,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			Permiso string
 		}
 
-		rows, _ = db.Query(`
+		rows, err = db.Query(`
 			SELECT DISTINCT m.id, m.nombre, m.icono, m.ruta, m.tipo, m.mostrar, m.padre_id, p.codigo
 			FROM usuario_rol ur
 			JOIN rol_menu_permiso rmp ON ur.rol_id = rmp.rol_id
@@ -100,6 +118,12 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			JOIN estados e3 ON m.estado_id = e3.id
 			WHERE ur.usuario_id = $1 AND e1.codigo = 'HAB' AND e2.codigo = 'HAB' AND e3.codigo = 'HAB'
 		`, u.ID)
+
+		if err != nil {
+			log.Println("Error al obtener menús:", err)
+			http.Error(w, "Error obteniendo menús", http.StatusInternalServerError)
+			return
+		}
 
 		menuMap := map[int]*model.Menu{}
 		permMap := map[int][]string{}
@@ -113,6 +137,11 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 		rows.Close()
 
+		if len(flatMenuData) == 0 {
+			log.Println("Usuario sin menús asignados:", u.Username)
+			http.Error(w, "Contraseña incorrecta", http.StatusUnauthorized)
+			return
+		}
 		// Construir los menús base
 		for _, row := range flatMenuData {
 			if _, exists := menuMap[row.MenuID]; !exists {
@@ -149,21 +178,29 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		// SUCURSALES
-		rows, _ = db.Query(`
+		rows, err = db.Query(`
 			SELECT s.id, s.nombre
 			FROM usuario_sucursal us
 			JOIN sucursales s ON s.id = us.sucursal_id
 			JOIN estados e ON us.estado_id = e.id
 			WHERE us.usuario_id = $1 AND e.codigo = 'ACT'
 		`, u.ID)
-
+		if err != nil {
+			log.Println("Error al obtener sucursales:", err)
+			http.Error(w, "Error obteniendo sucursales", http.StatusInternalServerError)
+			return
+		}
 		for rows.Next() {
 			var s model.Sucursal
 			rows.Scan(&s.ID, &s.Nombre)
 			u.Sucursales = append(u.Sucursales, s)
 		}
 		rows.Close()
-
+		if len(u.Sucursales) == 0 {
+			log.Println("Usuario sin sucursales activas:", u.Username)
+			http.Error(w, "Contraseña incorrecta", http.StatusUnauthorized)
+			return
+		}
 		// RESPUESTA FINAL
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{

@@ -39,10 +39,19 @@ func (h *UsuarioHandler) Listar(w http.ResponseWriter, r *http.Request) {
 
 func (h *UsuarioHandler) Crear(w http.ResponseWriter, r *http.Request) {
 	var u model.Usuario
+
+	// Primero decodificamos el cuerpo del JSON
 	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
 		http.Error(w, "JSON inválido", http.StatusBadRequest)
 		return
 	}
+
+	// Ahora validamos los campos obligatorios
+	if u.Username == "" || u.Email == "" {
+		http.Error(w, "Faltan campos obligatorios", http.StatusBadRequest)
+		return
+	}
+
 	if err := h.Service.CrearUsuario(r.Context(), &u); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
