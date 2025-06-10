@@ -111,8 +111,8 @@ func (r *UsuarioRepository) Update(ctx context.Context, u *model.Usuario) error 
 	return nil
 }
 
-func (r *UsuarioRepository) ChangeEstado(ctx context.Context, id int, estadoID int) error {
-	log.Printf("ChangeEstado llamado con estadoID=%d para usuarioID=%d", estadoID, id)
+func (r *UsuarioRepository) ChangeEstado(ctx context.Context, id int, estadoID int, actualizadoPor int) error {
+	log.Printf("ChangeEstado llamado con estadoID=%d para usuarioID=%d por usuarioID=%d", estadoID, id, actualizadoPor)
 
 	var existe bool
 	query := `
@@ -127,14 +127,17 @@ func (r *UsuarioRepository) ChangeEstado(ctx context.Context, id int, estadoID i
 		return err
 	}
 
-	log.Printf("Existe estado válido? %v", existe)
 	if !existe {
 		return fmt.Errorf("estado no válido o inactivo")
 	}
 
 	_, err = r.DB.ExecContext(ctx, `
-        UPDATE usuarios SET estado_id = $1 WHERE id = $2
-    `, estadoID, id)
+        UPDATE usuarios
+        SET estado_id = $1,
+            actualizado_en = NOW(),
+            actualizado_por = $3
+        WHERE id = $2
+    `, estadoID, id, actualizadoPor)
 
 	return err
 }

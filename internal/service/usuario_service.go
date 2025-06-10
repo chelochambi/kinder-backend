@@ -42,6 +42,6 @@ func (s *UsuarioService) ActualizarUsuario(ctx context.Context, u *model.Usuario
 	return s.Repo.Update(ctx, u)
 }
 
-func (s *UsuarioService) CambiarEstado(ctx context.Context, id int, estadoID int) error {
-	return s.Repo.ChangeEstado(ctx, id, estadoID)
+func (s *UsuarioService) CambiarEstado(ctx context.Context, id int, estadoID int, actualizadoPor int) error {
+	return s.Repo.ChangeEstado(ctx, id, estadoID, actualizadoPor)
 }

@@ -118,14 +118,15 @@ func (h *UsuarioHandler) CambiarEstado(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload struct {
-		EstadoID int `json:"estado_id"`
+		EstadoID       int `json:"estado_id"`
+		ActualizadoPor int `json:"actualizado_por"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, "JSON inválido", http.StatusBadRequest)
 		return
 	}
 
-	err = h.Service.CambiarEstado(r.Context(), id, payload.EstadoID)
+	err = h.Service.CambiarEstado(r.Context(), id, payload.EstadoID, payload.ActualizadoPor)
 	if err != nil {
 		if err.Error() == "estado no válido o inactivo" {
 			http.Error(w, err.Error(), http.StatusBadRequest)
