@@ -39,14 +39,17 @@ INSERT INTO usuarios (
 -- =======================
 INSERT INTO roles (id, nombre, codigo, descripcion, estado_id, creado_por, creado_en)
 VALUES 
-  (1, 'Administrador', 'ADMIN', 'Rol con todos los permisos', 3, 1, CURRENT_TIMESTAMP);
+  (1, 'Administrador', 'ADMIN', 'Rol con todos los permisos', 3, 1, CURRENT_TIMESTAMP),
+  (2, 'Director', 'DIR', 'Rol con probilegios para ver todos los datos', 3, 1, CURRENT_TIMESTAMP),
+  (3, 'Operador', 'OPER', 'Rol con probilegios para gestionar una sucursal', 3, 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar usuario_rol
 -- =======================
 INSERT INTO usuario_rol (usuario_id, rol_id, estado_id, vigente_desde, creado_por, creado_en)
 VALUES 
-  (1, 1, 3, CURRENT_DATE, 1, CURRENT_TIMESTAMP);
+  (1, 1, 3, CURRENT_DATE, 1, CURRENT_TIMESTAMP),
+  (2, 2, 3, CURRENT_DATE, 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar menús (2 niveles)
@@ -59,7 +62,7 @@ VALUES
   (4, 'Clientes', 'FaUsers', '/clientes', 4, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
   (5, 'Usuarios', 'FaUser', '/seguridad/usuarios', 1, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
   (6, 'Roles', 'FaUserTag', '/seguridad/roles', 2, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (7, 'Permisos', 'FaKey', '/seguridad/permisos', 3, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (7, 'Usuario roles', 'FaKey', '/seguridad/usuarioRoles', 3, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
   (8, 'Menús', 'FaList', '/seguridad/menus', 4, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP);
 
 -- =======================
@@ -100,6 +103,14 @@ VALUES
   (21, 1, 8, 2 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Crear
   (22, 1, 8, 3 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Actualizar
   (23, 1, 8, 4 ,3 ,1 ,CURRENT_TIMESTAMP); -- Menús - Eliminar
+  (24, 2, 1, 1, 3, 1, CURRENT_TIMESTAMP), -- Inicio - Listar
+  (25, 2, 2, 1, 3, 1, CURRENT_TIMESTAMP), -- Seguridad - Listar
+  (26, 2, 3, 1, 3, 1, CURRENT_TIMESTAMP), -- Sucursales - Listar
+  (27, 2, 4, 1, 3, 1, CURRENT_TIMESTAMP), -- Clientes - Listar
+  (28, 2, 5, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Usuarios - Listar
+  (29, 2, 6, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Roles - Listar
+  (30, 2, 7, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Permisos - Listar
+  (31, 2, 8, 1 ,3 ,1 ,CURRENT_TIMESTAMP); -- Menús - Listar
 
 -- =======================
 -- Insertar sucursales
@@ -115,4 +126,6 @@ VALUES
 INSERT INTO usuario_sucursal (usuario_id, sucursal_id, estado_id, creado_por, creado_en)
 VALUES 
   (1, 1, 1, 1, CURRENT_TIMESTAMP),
-  (1, 2, 1, 1, CURRENT_TIMESTAMP);
+  (1, 2, 1, 1, CURRENT_TIMESTAMP),
+  (2, 1, 1, 1, CURRENT_TIMESTAMP),
+  (2, 2, 1, 1, CURRENT_TIMESTAMP);
