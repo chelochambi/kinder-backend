@@ -106,12 +106,10 @@ VALUES
   (23, 1, 8, 4 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Eliminar
   (24, 2, 1, 1, 3, 1, CURRENT_TIMESTAMP), -- Inicio - Listar
   (25, 2, 2, 1, 3, 1, CURRENT_TIMESTAMP), -- Seguridad - Listar
-  (26, 2, 3, 1, 3, 1, CURRENT_TIMESTAMP), -- Sucursales - Listar
-  (27, 2, 4, 1, 3, 1, CURRENT_TIMESTAMP), -- Clientes - Listar
-  (28, 2, 5, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Usuarios - Listar
-  (29, 2, 6, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Roles - Listar
-  (30, 2, 7, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Permisos - Listar
-  (31, 2, 8, 1 ,3 ,1 ,CURRENT_TIMESTAMP); -- Menús - Listar
+  (26, 2, 5, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Usuarios - Listar
+  (27, 2, 6, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Roles - Listar
+  (28, 2, 7, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Permisos - Listar
+  (29, 2, 8, 1 ,3 ,1 ,CURRENT_TIMESTAMP); -- Menús - Listar
 
 -- =======================
 -- Insertar sucursales
