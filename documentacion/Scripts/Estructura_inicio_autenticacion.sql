@@ -73,7 +73,9 @@ CREATE TABLE menus (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     icono VARCHAR(50),
-    ruta VARCHAR(255),
+    ruta VARCHAR(255), -- Ruta en el frontend
+    componente VARCHAR(255), -- Compomente a ser utilizada de la página del frontend
+    pagina VARCHAR(255), -- Dirección del archivo de la página del frontend
     orden INTEGER DEFAULT 0,
     tipo VARCHAR(50),
     mostrar BOOLEAN DEFAULT TRUE,

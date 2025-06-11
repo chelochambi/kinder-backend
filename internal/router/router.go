@@ -22,9 +22,6 @@ func NewRouter(db *sql.DB) http.Handler {
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(middleware.AuthMiddleware)
 
-	// Handler para /auth/me
-	api.HandleFunc("/auth/me", handler.AuthMeHandler(db)).Methods("GET")
-
 	// ---------- Usuarios ----------
 	// Inicializamos repositorio, servicio y handler
 	usuarioRepo := repository.NewUsuarioRepository(db)

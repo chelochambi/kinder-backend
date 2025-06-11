@@ -54,16 +54,17 @@ VALUES
 -- =======================
 -- Insertar menús (2 niveles)
 -- =======================
-INSERT INTO menus (id, nombre, icono, ruta, orden, tipo, mostrar, padre_id, estado_id, creado_por, creado_en)
+INSERT INTO menus (id, nombre, icono, ruta, componente, pagina, orden, tipo, mostrar, padre_id, estado_id, creado_por, creado_en)
 VALUES
-  (1, 'Inicio', 'FaHome', '/', 1, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (2, 'Seguridad', 'FaLock', '/seguridad', 2, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (3, 'Sucursales', 'FaBuilding', '/sucursales', 3, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (4, 'Clientes', 'FaUsers', '/clientes', 4, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
-  (5, 'Usuarios', 'FaUser', '/seguridad/usuarios', 1, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (6, 'Roles', 'FaUserTag', '/seguridad/roles', 2, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (7, 'Usuario roles', 'FaKey', '/seguridad/usuarioRoles', 3, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
-  (8, 'Menús', 'FaList', '/seguridad/menus', 4, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP);
+  (1, 'Inicio', 'FaHome', '/', 'Dashboard', '/src/pages/Dashboard', 1, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (2, 'Seguridad', 'FaLock', '/seguridad', null, null, 2, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (3, 'Sucursales', 'FaBuilding', '/sucursales', 'ListaSucursales', '/src/pages/sucurales/ListaSucursales', 3, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (4, 'Clientes', 'FaUsers', '/clientes', 'ListaClientes', '/src/pages/clientes/ListaClientes', 4, 'sidebar', TRUE, NULL, 3, 1, CURRENT_TIMESTAMP),
+  (5, 'Usuarios', 'FaUser', '/seguridad/usuarios', 'ListaUsuario', '/src/pages/usuarios/ListaUsuario', 1, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (6, 'Crear Usuarios', 'FaUser', '/seguridad/usuarios/crear', 'CrearUsuario', '/src/pages/usuarios/CrearUsuario', 1, 'boton', FALSE, 5, 3, 1, CURRENT_TIMESTAMP),
+  (7, 'Roles', 'FaUserTag', '/seguridad/roles', 'ListaRoles', '/src/pages/usuarios/Roles', 2, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (8, 'Usuario roles', 'FaKey', '/seguridad/usuarioRoles', 'UsuarioRoles', '/src/pages/usuarios/UsuarioRol', 3, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP),
+  (9, 'Menús', 'FaList', '/seguridad/menus', 'ListaMenus', '/src/pages/usuarios/ListaMenu', 4, 'sidebar', TRUE, 2, 3, 1, CURRENT_TIMESTAMP);
 
 -- =======================
 -- Insertar permisos
@@ -102,7 +103,7 @@ VALUES
   (20, 1, 8, 1 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Listar
   (21, 1, 8, 2 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Crear
   (22, 1, 8, 3 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Actualizar
-  (23, 1, 8, 4 ,3 ,1 ,CURRENT_TIMESTAMP); -- Menús - Eliminar
+  (23, 1, 8, 4 ,3 ,1 ,CURRENT_TIMESTAMP), -- Menús - Eliminar
   (24, 2, 1, 1, 3, 1, CURRENT_TIMESTAMP), -- Inicio - Listar
   (25, 2, 2, 1, 3, 1, CURRENT_TIMESTAMP), -- Seguridad - Listar
   (26, 2, 3, 1, 3, 1, CURRENT_TIMESTAMP), -- Sucursales - Listar

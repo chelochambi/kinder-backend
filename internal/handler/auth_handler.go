@@ -97,18 +97,20 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 		// MENÚS + PERMISOS
 		type MenuRow struct {
-			MenuID  int
-			Nombre  string
-			Icono   string
-			Ruta    string
-			Tipo    string
-			Mostrar bool
-			PadreID sql.NullInt64
-			Permiso string
+			MenuID     int
+			Nombre     string
+			Icono      string
+			Ruta       string
+			Componente string
+			Pagina     string
+			Tipo       string
+			Mostrar    sql.NullBool
+			PadreID    sql.NullInt64
+			Permiso    string
 		}
 
 		rows, err = db.Query(`
-			SELECT DISTINCT m.id, m.nombre, m.icono, m.ruta, m.tipo, m.mostrar, m.padre_id, p.codigo
+			SELECT DISTINCT m.id, m.nombre, m.icono, m.ruta, COALESCE(m.componente, '') AS componente, COALESCE(m.pagina, '') AS pagina, m.tipo, m.mostrar, m.padre_id, p.codigo
 			FROM usuario_rol ur
 			JOIN rol_menu_permiso rmp ON ur.rol_id = rmp.rol_id
 			JOIN permisos p ON rmp.permiso_id = p.id
@@ -131,7 +133,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 
 		for rows.Next() {
 			var row MenuRow
-			rows.Scan(&row.MenuID, &row.Nombre, &row.Icono, &row.Ruta, &row.Tipo, &row.Mostrar, &row.PadreID, &row.Permiso)
+			rows.Scan(&row.MenuID, &row.Nombre, &row.Icono, &row.Ruta, &row.Componente, &row.Pagina, &row.Tipo, &row.Mostrar, &row.PadreID, &row.Permiso)
 			flatMenuData = append(flatMenuData, row)
 			permMap[row.MenuID] = append(permMap[row.MenuID], row.Permiso)
 		}
@@ -146,13 +148,15 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		for _, row := range flatMenuData {
 			if _, exists := menuMap[row.MenuID]; !exists {
 				menu := &model.Menu{
-					ID:       row.MenuID,
-					Nombre:   row.Nombre,
-					Icono:    row.Icono,
-					Ruta:     row.Ruta,
-					Tipo:     row.Tipo,
-					Mostrar:  row.Mostrar,
-					Permisos: permMap[row.MenuID],
+					ID:         row.MenuID,
+					Nombre:     row.Nombre,
+					Icono:      row.Icono,
+					Ruta:       row.Ruta,
+					Componente: row.Componente,
+					Pagina:     row.Pagina,
+					Tipo:       row.Tipo,
+					Mostrar:    row.Mostrar.Valid && row.Mostrar.Bool,
+					Permisos:   permMap[row.MenuID],
 				}
 				menuMap[row.MenuID] = menu
 			}
