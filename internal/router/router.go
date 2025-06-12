@@ -16,7 +16,8 @@ func NewRouter(db *sql.DB) http.Handler {
 
 	// Público
 	r.HandleFunc("/auth/login", handler.LoginHandler(db)).Methods("POST")
-	r.HandleFunc("/api/tipo_estado", handler.ListarTipoEstado(db)).Methods("GET")
+	r.HandleFunc("/auth/logout", handler.LogoutHandler()).Methods("POST")
+
 
 	// Protegido - Auth Middleware
 	api := r.PathPrefix("/api").Subrouter()

@@ -17,13 +17,21 @@ const UsuarioIDKey ContextKey = "usuarioID"
 // Middleware para validar el JWT
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-			http.Error(w, "Token no proporcionado", http.StatusUnauthorized)
-			return
-		}
+		var tokenStr string
 
-		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		cookie, err := r.Cookie("token")
+		if err == nil {
+			tokenStr = cookie.Value
+		} else {
+			// fallback opcional a Authorization header
+			authHeader := r.Header.Get("Authorization")
+			if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
+				tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
+			} else {
+				http.Error(w, "Token no proporcionado", http.StatusUnauthorized)
+				return
+			}
+		}
 
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 			// Validar método de firma

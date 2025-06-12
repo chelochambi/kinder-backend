@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"log"
+	"time"
 
 	"github.com/chelochambi/kinder-backend/internal/model"
 	"github.com/chelochambi/kinder-backend/internal/security"
@@ -206,10 +207,33 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		// RESPUESTA FINAL
-		w.Header().Set("Content-Type", "application/json")
+		http.SetCookie(w, &http.Cookie{
+			Name:     "token",
+			Value:    token,
+			HttpOnly: true,
+			Secure:   true, // Usa true si vas a usar HTTPS
+			Path:     "/",
+			SameSite: http.SameSiteStrictMode,
+		})
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"token":   token,
 			"usuario": u,
 		})
+	}
+}
+func LogoutHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Sobrescribimos la cookie con un valor vacío y vencimiento pasado
+		http.SetCookie(w, &http.Cookie{
+			Name:     "token",
+			Value:    "",
+			Path:     "/",
+			HttpOnly: true,
+			Expires:  time.Unix(0, 0), // fecha expirada
+			MaxAge:   -1,              // borra la cookie inmediatamente
+			SameSite: http.SameSiteStrictMode,
+			Secure:   false, // poner true si usás HTTPS
+		})
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Sesión cerrada correctamente"})
 	}
 }
