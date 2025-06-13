@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -12,7 +13,10 @@ var jwtKey = []byte("clave_secreta_segura") // usar variable de entorno real en 
 
 type ContextKey string
 
-const UsuarioIDKey ContextKey = "usuarioID"
+const (
+	UsuarioIDKey ContextKey = "usuarioID"
+	UsernameKey  ContextKey = "username"
+)
 
 // Middleware para validar el JWT
 func AuthMiddleware(next http.Handler) http.Handler {
@@ -20,6 +24,18 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		var tokenStr string
 
 		cookie, err := r.Cookie("token")
+
+		/*borrar*/
+		if err != nil {
+			log.Println("No se encontró la cookie del token:", err)
+			http.Error(w, "No autorizado2", http.StatusUnauthorized)
+			return
+		}
+
+		log.Println("Token recibido:", cookie.Value)
+		/**/
+
+
 		if err == nil {
 			tokenStr = cookie.Value
 		} else {
@@ -53,7 +69,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		// Extraer ID del usuario desde el claim
 		usuarioID := int(claims["sub"].(float64))
+		username := claims["name"].(string)
 		ctx := context.WithValue(r.Context(), UsuarioIDKey, usuarioID)
+		ctx = context.WithValue(ctx, UsernameKey, username)
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

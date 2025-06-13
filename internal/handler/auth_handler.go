@@ -211,9 +211,10 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 			Name:     "token",
 			Value:    token,
 			HttpOnly: true,
-			Secure:   true, // Usa true si vas a usar HTTPS
+			Secure:   false, // Usa true si vas a usar HTTPS
 			Path:     "/",
 			SameSite: http.SameSiteStrictMode,
+			MaxAge:   3600,
 		})
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"usuario": u,
@@ -230,10 +231,49 @@ func LogoutHandler() http.HandlerFunc {
 			HttpOnly: true,
 			Expires:  time.Unix(0, 0), // fecha expirada
 			MaxAge:   -1,              // borra la cookie inmediatamente
-			SameSite: http.SameSiteStrictMode,
+			SameSite: http.SameSiteLaxMode,
 			Secure:   false, // poner true si usás HTTPS
 		})
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Sesión cerrada correctamente"})
+	}
+}
+
+func MeHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		usuarioID, ok := r.Context().Value("usuarioID").(int)
+		if !ok {
+			http.Error(w, "No autorizado1", http.StatusUnauthorized)
+			return
+		}
+
+		//username, _ := r.Context().Value("username").(string) // si querés usarlo
+
+		// Podés reutilizar la lógica que necesites para volver a cargar el usuario completo
+		// Aquí te muestro un ejemplo simple con solo los datos básicos:
+		var u model.UsuarioInfo
+		var telefono, fotoURL sql.NullString
+
+		err := db.QueryRow(`
+			SELECT id, username, email, nombres, primer_apellido, segundo_apellido, telefono, foto_url
+			FROM usuarios
+			WHERE id = $1
+		`, usuarioID).Scan(&u.ID, &u.Username, &u.Email, &u.Nombres, &u.PrimerApellido, &u.SegundoApellido, &telefono, &fotoURL)
+
+		if err != nil {
+			http.Error(w, "Usuario no encontrado", http.StatusNotFound)
+			return
+		}
+
+		if telefono.Valid {
+			u.Telefono = telefono.String
+		}
+		if fotoURL.Valid {
+			u.FotoURL = fotoURL.String
+		}
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"usuario": u,
+		})
 	}
 }
