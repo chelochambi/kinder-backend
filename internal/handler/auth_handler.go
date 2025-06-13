@@ -9,6 +9,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/chelochambi/kinder-backend/internal/middleware"
 	"github.com/chelochambi/kinder-backend/internal/model"
 	"github.com/chelochambi/kinder-backend/internal/security"
 	"github.com/chelochambi/kinder-backend/internal/utils"
@@ -23,7 +24,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req LoginRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Datos inválidos", http.StatusBadRequest)
+			http.Error(w, "Datos inválidos.", http.StatusBadRequest)
 			return
 		}
 
@@ -241,7 +242,7 @@ func LogoutHandler() http.HandlerFunc {
 
 func MeHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		usuarioID, ok := r.Context().Value("usuarioID").(int)
+		usuarioID, ok := r.Context().Value(middleware.UsuarioIDKey).(int)
 		if !ok {
 			http.Error(w, "No autorizado1", http.StatusUnauthorized)
 			return
