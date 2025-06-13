@@ -28,7 +28,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		/*borrar*/
 		if err != nil {
 			log.Println("No se encontró la cookie del token:", err)
-			http.Error(w, "No autorizado - COD-C0001", http.StatusUnauthorized)
+			http.Error(w, "No autorizado - COD-C0002", http.StatusUnauthorized)
 			return
 		}
 

@@ -244,7 +244,7 @@ func MeHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		usuarioID, ok := r.Context().Value(middleware.UsuarioIDKey).(int)
 		if !ok {
-			http.Error(w, "No autorizado1", http.StatusUnauthorized)
+			http.Error(w, "No autorizado  - COD-C0001", http.StatusUnauthorized)
 			return
 		}
 
